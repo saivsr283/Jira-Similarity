@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JIRA Similarity Tool - Demo Mode</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #1f77b4;
+            --secondary-color: #ff7f0e;
+            --success-color: #2ca02c;
+            --danger-color: #d62728;
+            --warning-color: #ff7f0e;
+            --info-color: #17a2b8;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .main-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            margin: 20px auto;
+            max-width: 1400px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary-color), #4a90e2);
+            color: white;
+            padding: 2rem;
+            border-radius: 15px 15px 0 0;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .demo-badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+        }
+
+        .content {
+            padding: 2rem;
+        }
+
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            transition: transform 0.2s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+            padding: 1.5rem;
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), #4a90e2);
+            border: none;
+            border-radius: 25px;
+            padding: 0.75rem 2rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(31, 119, 180, 0.3);
+        }
+
+        .form-control {
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+            padding: 0.75rem 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(31, 119, 180, 0.25);
+        }
+
+        .table {
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .table th {
+            background: linear-gradient(135deg, var(--primary-color), #4a90e2);
+            color: white;
+            border: none;
+            font-weight: 600;
+        }
+
+        .similarity-high { color: var(--danger-color); font-weight: bold; }
+        .similarity-medium { color: var(--warning-color); font-weight: bold; }
+        .similarity-low { color: var(--success-color); font-weight: bold; }
+
+        .fix-card {
+            background: linear-gradient(135deg, #56ab2f 0%, #a8e6cf 100%);
+            color: white;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            border-radius: 10px;
+            border-left: 4px solid var(--success-color);
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .spinner-border {
+            width: 3rem;
+            height: 3rem;
+        }
+
+        .alert {
+            border-radius: 10px;
+            border: none;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin: 1rem 0;
+        }
+
+        .ticket-details {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .demo-tickets {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .demo-ticket {
+            background: white;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            border-left: 4px solid var(--primary-color);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .demo-ticket:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .content {
+                padding: 1rem;
+            }
+            
+            .metric-value {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <!-- Header -->
+        <div class="header">
+            <h1><i class="bi bi-search"></i> JIRA Similarity Tool</h1>
+            <p>AI-powered ticket similarity analysis and fix recommendations</p>
+            <div class="demo-badge">
+                <i class="bi bi-play-circle"></i> Demo Mode - No JIRA API Required
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <!-- Demo Info -->
+            <div class="alert alert-info">
+                <h5><i class="bi bi-info-circle"></i> Demo Mode</h5>
+                <p>This is a demonstration of the JIRA Similarity Tool using sample data. No JIRA API connection is required.</p>
+                <p><strong>Available demo tickets:</strong> PLAT-39562, PLAT-39560, PLAT-39561, PLAT-39563, PLAT-39564, PLAT-39565</p>
+            </div>
+
+            <!-- Input Section -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="bi bi-gear"></i> Analysis Configuration</h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="ticketKey" class="form-label">JIRA Ticket Key</label>
+                            <select class="form-select" id="ticketKey">
+                                <option value="PLAT-39562">PLAT-39562 - Database connection timeout in production environment</option>
+                                <option value="PLAT-39560">PLAT-39560 - Database connection pool exhaustion</option>
+                                <option value="PLAT-39561">PLAT-39561 - API response time degradation</option>
+                                <option value="PLAT-39563">PLAT-39563 - Memory leak in application server</option>
+                                <option value="PLAT-39564">PLAT-39564 - Slow database queries affecting performance</option>
+                                <option value="PLAT-39565">PLAT-39565 - Connection timeout in load balancer</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="threshold" class="form-label">Similarity Threshold</label>
+                            <input type="range" class="form-range" id="threshold" min="0.1" max="0.9" step="0.1" value="0.3">
+                            <small class="text-muted">Current: <span id="thresholdValue">0.3</span></small>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="maxResults" class="form-label">Max Results</label>
+                            <input type="number" class="form-control" id="maxResults" min="10" max="200" value="100">
+                        </div>
+                    </div>
+                    <div class="text-center mt-3">
+                        <button class="btn btn-primary btn-lg" onclick="analyzeTicket()">
+                            <i class="bi bi-search"></i> Analyze Ticket
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Loading -->
+            <div class="loading" id="loading">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-3">Analyzing ticket and finding similar issues...</p>
+            </div>
+
+            <!-- Results Section -->
+            <div id="results" style="display: none;">
+                <!-- Analysis Summary -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="bi bi-graph-up"></i> Analysis Summary</h5>
+                        <div class="row" id="summaryMetrics">
+                            <!-- Metrics will be populated here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reference Ticket -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="bi bi-ticket"></i> Reference Ticket</h5>
+                        <div id="referenceTicket">
+                            <!-- Reference ticket details will be populated here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Similarity Chart -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="bi bi-bar-chart"></i> Similarity Distribution</h5>
+                        <div class="chart-container">
+                            <canvas id="similarityChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Similar Tickets -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="bi bi-list-ul"></i> Similar Tickets</h5>
+                        <div class="table-responsive">
+                            <table class="table table-hover" id="similarTicketsTable">
+                                <thead>
+                                    <tr>
+                                        <th>Key</th>
+                                        <th>Summary</th>
+                                        <th>Similarity</th>
+                                        <th>Status</th>
+                                        <th>Type</th>
+                                        <th>Priority</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="similarTicketsBody">
+                                    <!-- Similar tickets will be populated here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fix Recommendations -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="bi bi-tools"></i> Fix Recommendations</h5>
+                        <div id="fixRecommendations">
+                            <!-- Fix recommendations will be populated here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Demo Features -->
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="bi bi-lightbulb"></i> Demo Features</h5>
+                        <div class="demo-tickets">
+                            <h6><strong>Try analyzing different tickets:</strong></h6>
+                            <div class="demo-ticket" onclick="selectTicket('PLAT-39562')">
+                                <strong>PLAT-39562</strong> - Database connection timeout in production environment
+                            </div>
+                            <div class="demo-ticket" onclick="selectTicket('PLAT-39560')">
+                                <strong>PLAT-39560</strong> - Database connection pool exhaustion (Resolved)
+                            </div>
+                            <div class="demo-ticket" onclick="selectTicket('PLAT-39561')">
+                                <strong>PLAT-39561</strong> - API response time degradation
+                            </div>
+                            <div class="demo-ticket" onclick="selectTicket('PLAT-39563')">
+                                <strong>PLAT-39563</strong> - Memory leak in application server
+                            </div>
+                            <div class="demo-ticket" onclick="selectTicket('PLAT-39564')">
+                                <strong>PLAT-39564</strong> - Slow database queries affecting performance (Resolved)
+                            </div>
+                            <div class="demo-ticket" onclick="selectTicket('PLAT-39565')">
+                                <strong>PLAT-39565</strong> - Connection timeout in load balancer
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.js"></script>
+    <script src="js/demo.js"></script>
+</body>
+</html> 

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        button { padding: 10px 20px; margin: 10px; }
+        #output { margin-top: 20px; padding: 10px; border: 1px solid #ccc; }
+    </style>
+</head>
+<body>
+    <h1>Debug Test</h1>
+    <button onclick="testButton()">Test Button</button>
+    <button onclick="testApp()">Test App</button>
+    <div id="output"></div>
+
+    <script src="js/app.js"></script>
+    <script>
+        // Initialize the app
+        const app = new JIRASimilarityTool();
+        
+        function testButton() {
+            document.getElementById('output').innerHTML += '<p>Button clicked!</p>';
+        }
+        
+        function testApp() {
+            document.getElementById('output').innerHTML += '<p>Testing app.analyzeTicket...</p>';
+            try {
+                app.analyzeTicket();
+                document.getElementById('output').innerHTML += '<p>app.analyzeTicket() called successfully</p>';
+            } catch (error) {
+                document.getElementById('output').innerHTML += '<p>Error: ' + error.message + '</p>';
+            }
+        }
+    </script>
+</body>
+</html> 

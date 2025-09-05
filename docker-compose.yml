@@ -1,0 +1,68 @@
+services:
+  jira-similarity-tool:
+    build: .
+    container_name: jira-similarity-tool
+    environment:
+      - JIRA_URL=${JIRA_URL:-https://koreteam.atlassian.net}
+      - JIRA_USERNAME=${JIRA_USERNAME:-hemanth.bandaru@kore.com}
+      - JIRA_API_TOKEN=${JIRA_API_TOKEN}
+    volumes:
+      - ./config.json:/app/config.json:ro
+      - ./exports:/app/exports
+    working_dir: /app
+    command: ["--help"]
+    profiles:
+      - cli
+      
+  jira-similarity-test:
+    build: .
+    container_name: jira-similarity-test
+    environment:
+      - JIRA_URL=${JIRA_URL:-https://koreteam.atlassian.net}
+      - JIRA_USERNAME=${JIRA_USERNAME:-hemanth.bandaru@kore.com}
+      - JIRA_API_TOKEN=${JIRA_API_TOKEN}
+    volumes:
+      - ./config.json:/app/config.json:ro
+    working_dir: /app
+    command: ["python", "test_python_tool.py"]
+    profiles:
+      - test
+
+  jira-similarity-web:
+    build:
+      context: .
+      dockerfile: Dockerfile.web
+    container_name: jira-similarity-web
+    ports:
+      - "8501:8501"
+    environment:
+      - JIRA_URL=${JIRA_URL:-https://koreteam.atlassian.net}
+      - JIRA_USERNAME=${JIRA_USERNAME:-hemanth.bandaru@kore.com}
+      - JIRA_API_TOKEN=${JIRA_API_TOKEN}
+    volumes:
+      - ./config.json:/app/config.json:ro
+      - ./exports:/app/exports
+    working_dir: /app
+    restart: unless-stopped
+    profiles:
+      - web
+
+  jira-filter-web:
+    build:
+      context: .
+      dockerfile: Dockerfile.web
+    container_name: jira-filter-web
+    ports:
+      - "8503:8501"
+    environment:
+      - JIRA_URL=${JIRA_URL:-https://koreteam.atlassian.net}
+      - JIRA_USERNAME=${JIRA_USERNAME:-hemanth.bandaru@kore.com}
+      - JIRA_API_TOKEN=${JIRA_API_TOKEN}
+    volumes:
+      - ./config.json:/app/config.json:ro
+      - ./exports:/app/exports
+      - ./filter_app.py:/app/streamlit_app.py:ro
+    working_dir: /app
+    restart: unless-stopped
+    profiles:
+      - filter 

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Test</title>
+</head>
+<body>
+    <h1>Simple Button Test</h1>
+    <button onclick="alert('Button clicked!')">Test Alert</button>
+    <button onclick="testFunction()">Test Function</button>
+    <div id="result"></div>
+
+    <script>
+        function testFunction() {
+            document.getElementById('result').innerHTML = '<p>Function called at: ' + new Date().toLocaleTimeString() + '</p>';
+        }
+    </script>
+</body>
+</html> 
