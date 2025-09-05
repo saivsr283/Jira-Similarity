@@ -743,12 +743,8 @@ def main():
         </div>
         """, unsafe_allow_html=True)
         single_ticket_key = st.text_input("Ticket Key (e.g., PLAT-12345)", key="single_ticket_key")
-        # If deployed in Streamlit Cloud, use the cloud URL; else default to localhost
-        try:
-            cloud_url = (st.secrets["SIMILARITY_APP_URL"].strip() if "SIMILARITY_APP_URL" in st.secrets else "")
-        except Exception:
-            cloud_url = ""
-        base_url = cloud_url or "http://localhost:8501"
+        # Always use the deployed Similarity app URL
+        base_url = "https://jira-similarity-project.streamlit.app".rstrip('/')
         if single_ticket_key.strip():
             similarity_url = f"{base_url}/?ticket={quote(single_ticket_key.strip())}"
         else:
