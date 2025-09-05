@@ -19,7 +19,7 @@ def test_jql_queries():
     jira_client = JIRAClient(
         config.get('jira_url'),
         config.get('username'),
-        config.get('api_token')
+        None  # token must be provided via UI; this script is for basic connectivity only
     )
     
     # First, let's try to get available projects

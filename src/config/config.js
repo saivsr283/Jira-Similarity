@@ -74,7 +74,7 @@ const defaultConfig = {
   jira: {
     baseUrl: process.env.JIRA_BASE_URL || 'https://koreteam.atlassian.net',
     email: process.env.JIRA_EMAIL || 'hemanth.bandaru@kore.com',
-    apiToken: process.env.JIRA_API_TOKEN || 'ATATT3xFfGF0m02NU4ZUMj-S19L289vvA7kqh-g6RdU6vYzSYx-8ZBi4nbvCi6oln05pN6UcSN0BT4_UOAhSlP_0iS4FzLeAPSXjMW6sVRr6A-lK_PN-X_q7hoX28AXUhhqGYAsPWvN9QVx1eXi0MmPVaVwnFZnBb9FcnqICjRPKZnUd2AZR7go=009EED60',
+    apiToken: process.env.JIRA_API_TOKEN || '',
     timeout: parseInt(process.env.JIRA_TIMEOUT) || 30000,
     maxRetries: parseInt(process.env.JIRA_MAX_RETRIES) || 3
   },

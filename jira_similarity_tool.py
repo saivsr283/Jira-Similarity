@@ -55,7 +55,7 @@ class JIRAClient:
         logger.info(f"JIRA Client initialized:")
         logger.info(f"  Base URL: {self.base_url}")
         logger.info(f"  Username: {self.username}")
-        logger.info(f"  API Token: {self.api_token[:10]}...{self.api_token[-10:]}")
+        logger.info("  API Token: [REDACTED]")
         logger.info(f"  Project Key: {self.project_key}")
     
     def get_ticket(self, ticket_key: str) -> Optional[JIRATicket]:
@@ -915,10 +915,10 @@ class JIRASimilarityTool:
         config = {
             'jira_url': os.getenv('JIRA_URL'),
             'username': os.getenv('JIRA_USERNAME'),
-            'api_token': os.getenv('JIRA_API_TOKEN')
+            'api_token': None
         }
         
-        if all(config.values()):
+        if config.get('jira_url') and config.get('username') and config.get('api_token'):
             return config
         
         return None

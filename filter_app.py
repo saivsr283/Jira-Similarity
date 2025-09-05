@@ -647,14 +647,24 @@ def main():
         st.error("❌ config.json not found. Please ensure the configuration file exists.")
         return
     
+    # Credentials from UI
+    st.sidebar.markdown("### 🔐 JIRA Credentials")
+    ui_username = st.sidebar.text_input("Username (email)", value=config.get('username', '') or '')
+    ui_token = st.sidebar.text_input("API Token", type="password", value="", placeholder="Paste your token")
+
     # Initialize JIRA client
     try:
+        jira_url = config.get('jira_url') or os.getenv('JIRA_URL', 'https://koreteam.atlassian.net')
+        username = ui_username or os.getenv('JIRA_USERNAME', '')
+        api_token = ui_token
+        if not api_token:
+            st.error("❌ JIRA API token is required. Please enter it in the sidebar.")
+            return
         jira_client = JIRAClient(
-            config.get('jira_url'),
-            config.get('username'),
-            config.get('api_token')
+            jira_url,
+            username,
+            api_token
         )
-        # Remove the success message to clean up the UI
     except Exception as e:
         st.error(f"❌ Failed to initialize JIRA client: {str(e)}")
         return
@@ -733,10 +743,16 @@ def main():
         </div>
         """, unsafe_allow_html=True)
         single_ticket_key = st.text_input("Ticket Key (e.g., PLAT-12345)", key="single_ticket_key")
+        # If deployed in Streamlit Cloud, use the cloud URL; else default to localhost
+        try:
+            cloud_url = (st.secrets["SIMILARITY_APP_URL"].strip() if "SIMILARITY_APP_URL" in st.secrets else "")
+        except Exception:
+            cloud_url = ""
+        base_url = cloud_url or "http://localhost:8501"
         if single_ticket_key.strip():
-            similarity_url = f"http://localhost:8501/?ticket={quote(single_ticket_key.strip())}"
+            similarity_url = f"{base_url}/?ticket={quote(single_ticket_key.strip())}"
         else:
-            similarity_url = "http://localhost:8501"
+            similarity_url = base_url
         try:
             st.link_button("Open Similarity Tool", similarity_url, use_container_width=True)
         except Exception:

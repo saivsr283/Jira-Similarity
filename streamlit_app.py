@@ -2357,9 +2357,9 @@ def main():
     
     if analyze_button and ticket_key:
         effective_username = username or config.get('username', '')
-        effective_api_token = api_token or config.get('api_token', '')
+        effective_api_token = api_token
         if not effective_username or not effective_api_token:
-            st.error("❌ Please provide username and API token, or configure them in config.json.")
+            st.error("❌ Please provide username and API token in the sidebar.")
             return
         
         # Create configuration
